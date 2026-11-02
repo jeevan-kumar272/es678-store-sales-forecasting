@@ -3,7 +3,7 @@ One line per decision: date | decision | reason | rubric criterion it supports.
 
 - 2026-11-02 | Gate 0 passed: 1,017,209 rows, 1,115 stores, 2013-01-01 to 2015-07-31, no duplicate store-days | matches the competition description | Data understanding
 - 2026-11-02 | 180 stores have no rows from 2014-07-01 to 2014-12-31 (184 days), plus one missing row in Jan 2013 | consistent with the refurbishment closures in the competition notes | Data understanding
-- 2026-11-02 | Missing store-days are treated as missing, not zero; lag and rolling features use only days that exist, and are left empty if a window has fewer than 10 days | zeros would fake a collapse in sales | Preprocessing
+- 2026-11-02 | Rolling features are left empty when the window has too few open days: fewer than 3 for the 7-day window, fewer than 10 for the 28 and 56-day windows | a thin window would give a misleading average | Preprocessing
 - 2026-11-02 | A row is scored only if the seasonal naive forecast exists for it; every model is scored on the same rows and the number of excluded rows is reported | fair comparison on identical rows | Evaluation design
 - 2026-11-02 | Closed days (17.0 percent of rows, all with zero sales) are excluded from training and scoring and set to zero by the opening schedule | a schedule fact, not a forecasting problem | Problem formulation
 - 2026-11-02 | 54 open days with zero sales are dropped from training and scoring | unexplained and too few to matter | Preprocessing
@@ -18,3 +18,6 @@ One line per decision: date | decision | reason | rubric criterion it supports.
 - 2026-11-02 | Seven reconciliation checks run after every batch and are stored in recon_results; a failure stops the run | catches loading errors early | Reproducibility
 - 2026-11-02 | Closed days stay in the fact table with open_flag 0; they are excluded later from training and scoring | the warehouse keeps every real event | Problem formulation
 - 2026-11-02 | Missing store attributes stay empty in the warehouse; imputation happens later using training rows only | avoids learning from test data | Preprocessing
+- 2026-11-02 | History features come from SQL window functions over a dense store-by-day grid, ending 7 days before the target day | missing days stay missing instead of becoming zero | Preprocessing
+- 2026-11-02 | Days to Christmas and days from Easter come from the calendar, not the data | no dependence on dates after the data ends | Preprocessing
+- 2026-11-02 | Leakage tests: future sales perturbed, customers perturbed, and a planted leak that the test must catch | proves no future information reaches a feature | Evaluation design

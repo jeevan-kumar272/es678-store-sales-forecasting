@@ -6,3 +6,5 @@ warehouse:
 	python src/etl.py --fresh
 test:
 	python -m pytest -q tests
+features:
+	python src/features.py

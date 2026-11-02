@@ -8,3 +8,5 @@ __pycache__/
 kaggle.json
 .env
 .pytest_cache/
+data/processed/
+.pytest_cache/
