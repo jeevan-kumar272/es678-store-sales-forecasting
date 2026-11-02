@@ -14,3 +14,7 @@ One line per decision: date | decision | reason | rubric criterion it supports.
 - 2026-11-02 | Target is log1p(Sales); errors reported back in euros | skew 1.59 raw against -0.11 after log1p on open days | Problem formulation
 - 2026-11-02 | Customers is excluded from features | only known after the day ends; correlation with Sales is 0.82 on open days, and a leakage demo will measure the inflation | Preprocessing and leakage
 - 2026-11-02 | The refurbishment gap overlaps folds F1 to F4; those stores have no validation rows then and limited history in early 2015; reported as a failure-audit slice | known data limitation | Evaluation design
+- 2026-11-02 | Warehouse is a star schema in SQLite, loaded from staging tables; the first 30 days load one at a time, the rest in one bulk batch | proves the daily process and keeps the raw file untouched | Reproducibility
+- 2026-11-02 | Seven reconciliation checks run after every batch and are stored in recon_results; a failure stops the run | catches loading errors early | Reproducibility
+- 2026-11-02 | Closed days stay in the fact table with open_flag 0; they are excluded later from training and scoring | the warehouse keeps every real event | Problem formulation
+- 2026-11-02 | Missing store attributes stay empty in the warehouse; imputation happens later using training rows only | avoids learning from test data | Preprocessing

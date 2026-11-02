@@ -21,3 +21,5 @@ CREATE TABLE IF NOT EXISTS etl_batch_log (
 CREATE TABLE IF NOT EXISTS recon_results (
   batch_id INTEGER REFERENCES etl_batch_log, check_name TEXT, source_value REAL,
   warehouse_value REAL, passed INTEGER);
+CREATE TABLE IF NOT EXISTS stg_files (name TEXT, sha256 TEXT, rows INTEGER);
+CREATE TABLE IF NOT EXISTS reject_rows (source_row INTEGER PRIMARY KEY, date TEXT, reason TEXT);
