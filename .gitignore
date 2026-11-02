@@ -1,0 +1,9 @@
+data/raw/*
+!data/raw/.gitkeep
+data/fake/
+warehouse/*.db
+.venv/
+__pycache__/
+*.ipynb_checkpoints
+kaggle.json
+.env

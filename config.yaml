@@ -1,0 +1,37 @@
+# All dates and numbers that matter live here. Commit this file BEFORE comparing any model.
+seed: 42
+horizon_days: 7                 # forecast made at the end of day t for day t+7
+
+data:
+  raw_dir: data/raw
+  db_path: warehouse/rossmann.db
+  expected_rows: 1017209        # train.csv, verify at Gate 0
+  expected_stores: 1115
+
+split:
+  warmup_days: 56               # first target dates need 56 days of history
+  dev_end: "2015-03-31"
+  test_start: "2015-04-01"
+  test_end: "2015-07-31"        # scored ONCE, model frozen
+  folds:                        # rolling-origin, 42 days each, training = target dates before val_start
+    - {name: F1, val_start: "2014-06-02", val_end: "2014-07-13"}
+    - {name: F2, val_start: "2014-08-04", val_end: "2014-09-14"}
+    - {name: F3, val_start: "2014-10-06", val_end: "2014-11-16"}
+    - {name: F4, val_start: "2014-11-24", val_end: "2015-01-04"}   # includes Christmas
+    - {name: F5, val_start: "2015-02-16", val_end: "2015-03-29"}
+
+features:
+  lags_days: [7, 14, 21, 28]
+  rolling_windows: [7, 28, 56]
+
+models:
+  optuna_trials: 40
+  optuna_seeds: [1, 2, 3]
+  model_seeds: [1, 2, 3, 4, 5]
+
+eval:
+  bootstrap_B: 1000
+  cluster: Store                # resample whole stores, never rows
+  interval_level: 0.8           # 10th to 90th percentile band
+  cold_start_store_fraction: 0.1
+  horizon_sweep: [1, 7, 14, 28]
