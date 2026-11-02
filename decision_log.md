@@ -21,3 +21,7 @@ One line per decision: date | decision | reason | rubric criterion it supports.
 - 2026-11-02 | History features come from SQL window functions over a dense store-by-day grid, ending 7 days before the target day | missing days stay missing instead of becoming zero | Preprocessing
 - 2026-11-02 | Days to Christmas and days from Easter come from the calendar, not the data | no dependence on dates after the data ends | Preprocessing
 - 2026-11-02 | Leakage tests: future sales perturbed, customers perturbed, and a planted leak that the test must catch | proves no future information reaches a feature | Evaluation design
+- 2026-11-02 | Models are scored only on rows where the seasonal naive forecast exists: 169,201 of 175,012 validation rows (5,811 left out, 3.3 percent) | every model is compared on identical rows | Evaluation design
+- 2026-11-02 | Shuffled-target check passed: constant forecast MAE 2,291.6, shuffled model 2,279.5, real model 643.6 | no label information reaches the model through the pipeline | Evaluation design
+- 2026-11-02 | First untuned run, one seed: LightGBM MAE 640.7 (95 percent interval 627.9 to 652.9) against 1,989.6 for the seasonal naive; paired difference -1,348.9 (-1,383.2 to -1,314.7) | store-cluster bootstrap, 1,000 resamples | Results
+- 2026-11-02 | Ridge, Lasso and linear regression have a heavy error tail (RMSE about twice MAE) and wide intervals; cause under investigation | a few stores with large errors | Results, errors and limitations

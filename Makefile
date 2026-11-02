@@ -8,3 +8,7 @@ test:
 	python -m pytest -q tests
 features:
 	python src/features.py
+cv:
+	python src/run_cv.py --sanity
+diagnose:
+	python src/diagnose_cv.py
