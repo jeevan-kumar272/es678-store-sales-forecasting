@@ -1,0 +1,85 @@
+{
+  "rows": 1017209,
+  "stores": 1115,
+  "date_min": "2013-01-01",
+  "date_max": "2015-07-31",
+  "calendar_days": 942,
+  "gate0_rows_match": true,
+  "gate0_stores_match": true,
+  "duplicate_store_dates": 0,
+  "missing_store_days": 33121,
+  "stores_with_missing_days": 181,
+  "stores_with_gap_30plus_days": 180,
+  "longest_gap_days": 184,
+  "long_gap_examples": [
+    {
+      "store": 13,
+      "start": "2014-07-01",
+      "end": "2014-12-31",
+      "days": 184
+    },
+    {
+      "store": 20,
+      "start": "2014-07-01",
+      "end": "2014-12-31",
+      "days": 184
+    },
+    {
+      "store": 22,
+      "start": "2014-07-01",
+      "end": "2014-12-31",
+      "days": 184
+    },
+    {
+      "store": 32,
+      "start": "2014-07-01",
+      "end": "2014-12-31",
+      "days": 184
+    },
+    {
+      "store": 36,
+      "start": "2014-07-01",
+      "end": "2014-12-31",
+      "days": 184
+    }
+  ],
+  "missing_days_by_month": {
+    "2013-01": 1,
+    "2014-07": 5580,
+    "2014-08": 5580,
+    "2014-09": 5400,
+    "2014-10": 5580,
+    "2014-11": 5400,
+    "2014-12": 5580
+  },
+  "closed_share": 0.1699,
+  "open_but_zero_sales": 54,
+  "closed_but_positive_sales": 0,
+  "state_holiday_values": {
+    "0": 986159,
+    "a": 20260,
+    "b": 6690,
+    "c": 4100
+  },
+  "promo_share": 0.3815,
+  "school_holiday_share": 0.1786,
+  "store_file_missing": {
+    "CompetitionDistance": 3,
+    "CompetitionOpenSinceMonth": 354,
+    "CompetitionOpenSinceYear": 354,
+    "Promo2SinceWeek": 544,
+    "Promo2SinceYear": 544,
+    "PromoInterval": 544
+  },
+  "sales_quantiles_open_days": {
+    "0.01": 2188.0,
+    "0.25": 4859.0,
+    "0.5": 6369.0,
+    "0.75": 8360.0,
+    "0.99": 17789.0
+  },
+  "sales_mean_open_days": 6956.0,
+  "sales_skew_raw": 1.59,
+  "sales_skew_log1p": -0.11,
+  "corr_sales_customers_open_days": 0.824
+}
