@@ -1,6 +1,5 @@
 # Decision log
 One line per decision: date | decision | reason | rubric criterion it supports.
-
 - 2026-11-02 | Gate 0 passed: 1,017,209 rows, 1,115 stores, 2013-01-01 to 2015-07-31, no duplicate store-days | matches the competition description | Data understanding
 - 2026-11-02 | 180 stores have no rows from 2014-07-01 to 2014-12-31 (184 days), plus one missing row in Jan 2013 | consistent with the refurbishment closures in the competition notes | Data understanding
 - 2026-11-02 | Rolling features are left empty when the window has too few open days: fewer than 3 for the 7-day window, fewer than 10 for the 28 and 56-day windows | a thin window would give a misleading average | Preprocessing
