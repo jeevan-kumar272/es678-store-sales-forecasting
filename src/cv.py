@@ -4,6 +4,8 @@ The test period is never touched here."""
 import numpy as np, pandas as pd
 from modeling import make_model
 
+STOCHASTIC = {"lightgbm", "random_forest"}      # models whose result depends on the random seed
+
 def fold_indices(df, cfg):
     dev = df["split"].eq("dev").to_numpy(); d = df["date"].to_numpy()
     for f in cfg["split"]["folds"]:
@@ -11,7 +13,7 @@ def fold_indices(df, cfg):
         va = dev & (d >= f["val_start"]) & (d <= f["val_end"])
         yield f["name"], np.flatnonzero(tr), np.flatnonzero(va)
 
-def run_cv(df, cfg, model_names, features, seed=1, params=None, verbose=True):
+def run_cv(df, cfg, model_names, features, seed=1, params=None, verbose=True, extra_seeds=()):
     """Returns one row per validation store-day with the fold, the target, both baselines and one column per model."""
     params = params or {}
     parts = []
@@ -21,10 +23,13 @@ def run_cv(df, cfg, model_names, features, seed=1, params=None, verbose=True):
         out = df.iloc[va][["store_key", "date", "sales", "baseline_seasonal_naive", "baseline_wd_mean4"]].copy()
         out["fold"] = name
         for m in model_names:
-            est, cols = make_model(m, features, seed, params.get(m))
-            est.fit(df.iloc[tr][cols], df.iloc[tr]["sales"].to_numpy(float))
-            out[m] = est.predict(df.iloc[va][cols])
-            if verbose: print("  fold %s  %-13s trained on %d rows, scored %d" % (name, m, len(tr), len(va)), flush=True)
+            seeds = [seed] + ([s for s in extra_seeds if s != seed] if m in STOCHASTIC else [])
+            for k, s in enumerate(seeds):
+                est, cols = make_model(m, features, s, params.get(m))
+                est.fit(df.iloc[tr][cols], df.iloc[tr]["sales"].to_numpy(float))
+                out[m if k == 0 else "%s__seed%d" % (m, s)] = est.predict(df.iloc[va][cols])
+            if verbose: print("  fold %s  %-13s trained on %d rows (%d seed%s), scored %d" % (
+                name, m, len(tr), len(seeds), "" if len(seeds) == 1 else "s", len(va)), flush=True)
         parts.append(out)
     return pd.concat(parts, ignore_index=True)
 

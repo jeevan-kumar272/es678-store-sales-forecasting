@@ -2,7 +2,7 @@
 Usage: python src/run_cv.py [--models linear,ridge,lasso,lightgbm] [--seed 1] [--sanity]
 Scoring rule: every model is scored on the SAME rows, those where the seasonal naive forecast exists.
 The number of rows left out is printed."""
-import argparse, pathlib
+import argparse, json, pathlib
 import numpy as np, pandas as pd
 from utils import load_config, ROOT
 from features import feature_columns
@@ -16,6 +16,8 @@ def main():
     ap.add_argument("--models", default="linear,ridge,lasso,lightgbm")
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--sanity", action="store_true", help="also run the shuffled-target check")
+    ap.add_argument("--params", default=None, help="JSON file with tuned parameters per model (from tune.py)")
+    ap.add_argument("--extra-seeds", default="", help="more seeds for the random models, e.g. 2,3,4,5")
     ap.add_argument("--out-dir", default=str(ROOT / "artifacts"), help="where the results tables are saved")
     ap.add_argument("--oof", default=str(ROOT / "data" / "processed" / "cv_oof.pkl"), help="where out-of-fold predictions are saved")
     a = ap.parse_args()
@@ -31,7 +33,9 @@ def main():
         print("  PASS" if r["passed"] else "  FAIL: investigate before trusting any result", "\n")
 
     print("Cross-validation on the development period (5 expanding-window folds)")
-    oof = run_cv(df, cfg, models, feats, a.seed)
+    params = json.load(open(a.params)) if a.params else {}
+    extra = [int(s) for s in a.extra_seeds.split(",") if s]
+    oof = run_cv(df, cfg, models, feats, a.seed, params=params, extra_seeds=extra)
     common = oof[oof.baseline_seasonal_naive.notna()].copy()
     print("\nScored on %d of %d validation rows (%d left out because the seasonal naive forecast does not exist)"
           % (len(common), len(oof), len(oof) - len(common)))
@@ -39,6 +43,15 @@ def main():
     tab = pd.DataFrame({p: summarize(common, p, scale) for p in preds}).T
     print("\nPooled over all folds (euros):")
     print(tab[["mae", "wape", "mase", "rmse", "rmspe", "r2", "r2_within_store", "skill_vs_naive"]].round(4).to_string())
+    seed_cols = {m: [m] + [c for c in oof.columns if c.startswith(m + "__seed")] for m in models}
+    if any(len(v) > 1 for v in seed_cols.values()):
+        print("\nSeed stability (pooled MAE per seed; only the random models are repeated):")
+        rows = {}
+        for m, cols in seed_cols.items():
+            if len(cols) > 1:
+                v = np.array([np.abs(common.sales - common[c]).mean() for c in cols])
+                rows[m] = {"seeds": len(cols), "mean_mae": v.mean(), "sd": v.std(ddof=1), "min": v.min(), "max": v.max()}
+        print(pd.DataFrame(rows).T.round(2).to_string())
     print("\nMAE by fold:")
     print(common.groupby("fold").apply(lambda g: pd.Series({p: np.mean(np.abs(g.sales - g[p])) for p in preds}), include_groups=False).round(1).to_string())
     ci = bootstrap_ci(store_sums(common, preds), preds, "baseline_seasonal_naive", B=cfg["eval"]["bootstrap_B"], seed=cfg["seed"])

@@ -43,7 +43,7 @@ def main():
     ctx = ["store_key", "date", "store_type", "promo", "holiday_code", "competition_distance", "lag_7", "roll_mean_28", "days_to_christmas"]
     df = oof.merge(feats[ctx], on=["store_key", "date"], how="left")
     df = df[df.baseline_seasonal_naive.notna()]
-    models = [c for c in oof.columns if c not in IDS]
+    models = [c for c in oof.columns if c not in IDS and "__seed" not in c]
     preds = ["baseline_seasonal_naive", "baseline_wd_mean4"] + models
     pd.set_option("display.width", 200); pd.set_option("display.max_columns", 30)
 
