@@ -1,0 +1,17 @@
+{
+  "ridge": {
+    "alpha": 0.010013176560941263
+  },
+  "lasso": {
+    "alpha": 0.00010007903854383786
+  },
+  "lightgbm": {
+    "n_estimators": 652,
+    "learning_rate": 0.07936359045786766,
+    "num_leaves": 43,
+    "min_child_samples": 283,
+    "subsample": 0.8189445823056893,
+    "colsample_bytree": 0.8406172889011841,
+    "reg_lambda": 0.7637818547891366
+  }
+}
