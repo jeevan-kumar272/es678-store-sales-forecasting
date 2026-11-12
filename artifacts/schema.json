@@ -1,0 +1,15 @@
+{
+  "store_id": "integer, 1 to 1115",
+  "target_date": "YYYY-MM-DD, at most horizon_days after the last loaded day",
+  "promo": "0 or 1, planned promotion on the target day",
+  "state_holiday": "0, a, b or c",
+  "school_holiday": "0 or 1",
+  "horizon_days": 7,
+  "example": {
+    "store_id": 1,
+    "target_date": "2015-07-31",
+    "promo": 1,
+    "state_holiday": "0",
+    "school_holiday": 0
+  }
+}
