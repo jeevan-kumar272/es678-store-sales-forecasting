@@ -16,6 +16,9 @@ NAMES = {"baseline_seasonal_naive": "Same weekday\nlast week", "baseline_wd_mean
          "ridge": "Ridge", "lasso": "Lasso", "lightgbm": "LightGBM"}
 HOLIDAY = {0: "none", 1: "public\nholiday", 2: "Easter", 3: "Christmas"}
 
+def _months(ax):
+    ax.xaxis.set_major_locator(mdates.MonthLocator()); ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y")); ax.tick_params(axis="x", rotation=0)
+
 def _save(fig, out, name):
     out.mkdir(parents=True, exist_ok=True); p = out / name
     fig.savefig(p, bbox_inches="tight"); plt.close(fig); print("  wrote", p); return p
@@ -41,8 +44,8 @@ def fig_results(boot, out):
     cols = ["#9aa5b1"] * 2 + ["#2A7F8E"] * (len(b) - 3) + ["#1F3A5F"]
     ax.barh(y, b.mae, xerr=[b.mae - b.mae_lo, b.mae_hi - b.mae], color=cols[:len(b)], ecolor="black", capsize=2)
     ax.set_yticks(y); ax.set_yticklabels([NAMES[m] for m in b.index]); ax.invert_yaxis(); ax.set_xlabel("test MAE (euros), 95% interval")
-    for i, (m, v) in enumerate(b.mae.items()): ax.text(v + 30, i, "%.0f" % v, va="center", fontsize=6.5)
-    ax.set_xlim(0, b.mae_hi.max() * 1.18); fig.tight_layout(); return _save(fig, out, "fig_results.png")
+    for i, (v, hi) in enumerate(zip(b.mae, b.mae_hi)): ax.text(hi + 35, i, "%.0f" % v, va="center", fontsize=6.5)
+    ax.set_xlim(0, b.mae_hi.max() * 1.2); fig.tight_layout(); return _save(fig, out, "fig_results.png")
 
 def fig_intervals(cov, summ, out):
     rows = [("all", "all", summ["conformal"]["coverage"], summ["quantile_regression"]["coverage"], summ["n_test_rows"])]
@@ -87,15 +90,16 @@ def fig_residuals(tp, chosen, out):
     ax[1, 0].set_xlabel("normal quantiles"); ax[1, 0].set_ylabel("log residual"); ax[1, 0].set_title("(c) Normal QQ plot of log residuals")
     daily = d.groupby("date").res.mean(); daily.index = pd.to_datetime(daily.index)
     ax[1, 1].plot(daily.index, daily.values, color="#9aa5b1", lw=0.6); ax[1, 1].plot(daily.index, daily.rolling(7, min_periods=3).mean(), color="#1F3A5F", lw=1)
-    ax[1, 1].axhline(0, color="#B5483A", lw=0.8); ax[1, 1].set_ylabel("mean residual per day (euros)"); ax[1, 1].set_title("(d) Mean error over the test period"); ax[1, 1].tick_params(axis="x", rotation=30)
+    ax[1, 1].axhline(0, color="#B5483A", lw=0.8); ax[1, 1].set_ylabel("mean residual per day (euros)"); ax[1, 1].set_title("(d) Mean error over the test period"); _months(ax[1, 1])
     fig.tight_layout(); return _save(fig, out, "fig_residuals.png")
 
 def fig_cases(tp, chosen, worst, out):
     stores = list(worst.store_key.head(2)); fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.3))
     for a, s in zip(ax, stores):
-        d = tp[tp.store_key == s].sort_values("date"); x = pd.to_datetime(d.date)
-        a.plot(x, d.sales, color="black", lw=0.8, label="actual"); a.plot(x, d[chosen], color="#2A7F8E", lw=0.8, label="forecast")
-        a.set_title("Store %d" % s); a.set_ylabel("sales (euros)"); a.tick_params(axis="x", rotation=30); a.legend(frameon=False)
+        d = tp[tp.store_key == s].assign(date=lambda z: pd.to_datetime(z.date)).set_index("date").sort_index()
+        d = d.reindex(pd.date_range(d.index.min(), d.index.max()))          # days with no trading become gaps, not joined lines
+        a.plot(d.index, d.sales, color="black", lw=0.8, label="actual"); a.plot(d.index, d[chosen], color="#2A7F8E", lw=0.8, label="forecast")
+        a.set_title("Store %d" % s); a.set_ylabel("sales (euros)"); _months(a); a.legend(frameon=False)
     fig.tight_layout(); return _save(fig, out, "fig_cases.png")
 
 def main():
