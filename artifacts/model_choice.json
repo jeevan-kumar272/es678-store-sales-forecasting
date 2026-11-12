@@ -1,0 +1,19 @@
+{
+  "chosen": "lightgbm",
+  "best_mean_mae": 642.3368140670002,
+  "best_model": "lightgbm",
+  "standard_error": 72.48260496487002,
+  "threshold": 714.8194190318702,
+  "mean_fold_mae": {
+    "ridge": 783.7323388829831,
+    "lasso": 789.2758165497978,
+    "lightgbm": 642.3368140670002
+  },
+  "within_one_se": [
+    "lightgbm"
+  ],
+  "folds_won_by_best": {
+    "ridge": 5,
+    "lasso": 5
+  }
+}
