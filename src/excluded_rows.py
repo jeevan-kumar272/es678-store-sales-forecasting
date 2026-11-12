@@ -8,6 +8,8 @@ import numpy as np, pandas as pd
 from utils import load_config, ROOT
 
 def _row(d, p):
+    if len(d) == 0:
+        return {"rows": 0, "mae": np.nan, "wape": np.nan, "mean_sales": np.nan}
     e = (d.sales - d[p]).abs()
     return {"rows": len(d), "mae": e.mean(), "wape": e.sum() / d.sales.sum(), "mean_sales": d.sales.mean()}
 

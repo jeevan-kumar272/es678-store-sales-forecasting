@@ -24,3 +24,13 @@ ablation:
 	python src/ablation.py
 failure:
 	python src/failure_audit.py
+figures:
+	python src/make_figures.py
+serve:
+	uvicorn serve:app --app-dir src --port 8000
+ui:
+	streamlit run src/app.py
+paper:
+	cd paper && pdflatex paper.tex && pdflatex paper.tex
+promo-cycle:
+	python src/check_promo_cycle.py
