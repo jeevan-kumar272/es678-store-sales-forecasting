@@ -61,3 +61,9 @@ saved model | `paper/` LaTeX source and figures | `decision_log.md` every design
 One retailer, one country, 2013 to 2015. Promotions were not randomised, so feature effects are associations. Christmas is
 absent from the test period and Easter appears once. Sales understate demand when stock runs out. 5.5 percent of test rows have no
 last-week value and are left out of the headline scores (the model does better on them).
+
+## AI-use disclosure and citations
+
+AI-use disclosure: Claude (Anthropic) helped me plan the project and write the code. The dataset, the data cleaning, running the code and the evaluation were done by me on my own machine, and every number in the paper comes from my own outputs.
+
+Citations: dataset Rossmann Store Sales, Kaggle, 2015. Software: pandas (McKinney 2010), NumPy (Harris et al. 2020), SciPy (Virtanen et al. 2020), scikit-learn (Pedregosa et al. 2011), LightGBM (Ke et al. 2017), Optuna (Akiba et al. 2019), Matplotlib (Hunter 2007), SQLite, and FastAPI and Streamlit for the API and demo page. Methods: Hyndman and Koehler 2006, Angelopoulos and Bates 2021, Duan 1983.
